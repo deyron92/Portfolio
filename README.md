@@ -28,6 +28,7 @@ This portfolio showcases a range of projects focused on network automation and c
 ## Cybersecurity Projects
 - ** Cross platform port-scanner**: Scans specified ports on a target host. https://github.com/deyron92/Portfolio/blob/34e9c0e9a96300d841d6d847451b95bc2a8cc191/Port%20Scanner
 - **system-hardening-checklist.md**: Provides a checklist for securing systems.
+https://github.com/deyron92/Portfolio/blob/3c01be96c1325ddf35d43e74531933a873d45144/System%20Hardening%20Checklist
 - **wireshark-analysis-guide.md**: Offers guidance on analyzing network traffic with Wireshark.
 - **ids-setup-script.sh**: Automates the setup of an Intrusion Detection System.
 
