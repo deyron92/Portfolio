@@ -1,0 +1,67 @@
+import socket
+import platform
+import sys
+import argparse
+import select
+
+def scan_port(host, port, timeout=3):
+    try:
+        # Display basic system info
+        os_name = platform.system()
+        print(f"[INFO] Operating System: {os_name}")
+
+        # Resolve hostname
+        ip = socket.gethostbyname(host)
+        print(f"[+] Scanning {host} ({ip}) on port {port}...")
+
+        # Create a TCP socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.settimeout(timeout)
+            result = sock.connect_ex((ip, port))
+
+            if result == 0:
+                print(f"[OPEN] Port {port} is open on {host}")
+            else:
+                print(f"[CLOSED/FILTERED] Port {port} is closed or filtered on {host} (Error code: {result})")
+
+    except socket.gaierror:
+        print("[-] Hostname could not be resolved. Check your input.")
+    except socket.error as e:
+        print(f"[-] Socket error: {e}")
+    except KeyboardInterrupt:
+        print("\n[!] Scan cancelled by user.")
+        sys.exit(0)
+    except Exception as e:
+        print(f"[-] Unexpected error: {e}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Cross-Platform Single Port Scanner")
+    parser.add_argument("host", nargs="?", help="Host to scan (e.g., google.com or 192.168.1.1)")
+    parser.add_argument("port", nargs="?", type=int, help="Port to scan (e.g., 80)")
+    parser.add_argument("--timeout", type=float, default=3, help="Connection timeout in seconds")
+    args = parser.parse_args()
+
+    print("=== Cross-Platform Single Port Scanner ===")
+    if not args.host or not args.port:
+        # Check if stdin is available for interactive input
+        if select.select([sys.stdin], [], [], 0.0)[0]:
+            try:
+                target_host = input("Enter the host (e.g., google.com or 192.168.1.1): ")
+                target_port = int(input("Enter the port to scan (e.g., 80): "))
+            except (EOFError, ValueError):
+                print("[-] Invalid input or non-interactive environment. Please provide host and port as arguments.")
+                sys.exit(1)
+        else:
+            print("[-] No interactive input available. Use: python port_scanner.py <host> <port>")
+            sys.exit(1)
+    else:
+        target_host = args.host
+        target_port = args.port
+
+    try:
+        if 1 <= target_port <= 65535:
+            scan_port(target_host, target_port, args.timeout)
+        else:
+            print("[-] Port must be between 1 and 65535.")
+    except ValueError:
+        print("[-] Please enter a valid integer for the port.")
