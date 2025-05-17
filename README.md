@@ -1,6 +1,8 @@
 # Portfolio
 
 <h1>Hi, I am Deyron Adams <br/><a 
+<br>
+<h2>Certifications: Comptia Network+, Microsoft Certified: Azure Fundementals (AZ900) </h2>
 
 
 <h2>👨‍💻 Cyber Security Projects and Network Automations Showcase:</h2>
@@ -31,7 +33,7 @@ This portfolio showcases a range of projects focused on network automation and c
 
 <h2> 🤳 Connect with me:</h2>
 
-Linkedin
+<body1> [Linkedin]: https://www.linkedin.com/in/deyron-adams-4a423495
 
 <!--
 **joshmadakor1/joshmadakor1** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
