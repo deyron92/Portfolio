@@ -31,7 +31,7 @@ This portfolio showcases a range of projects focused on network automation and c
 
 <h2> 🤳 Connect with me:</h2>
 
-Linknd
+Linkedin
 
 <!--
 **joshmadakor1/joshmadakor1** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
