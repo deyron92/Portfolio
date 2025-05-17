@@ -26,7 +26,7 @@ This portfolio showcases a range of projects focused on network automation and c
 - **switch-config-deploy.ps1**: Deploys configuration templates to network switches.
 
 ## Cybersecurity Projects
-- **port-scanner.ps1**: Scans specified ports on a target host.
+- ** Cross platform port-scanner**: Scans specified ports on a target host.
 - **system-hardening-checklist.md**: Provides a checklist for securing systems.
 - **wireshark-analysis-guide.md**: Offers guidance on analyzing network traffic with Wireshark.
 - **ids-setup-script.sh**: Automates the setup of an Intrusion Detection System.
