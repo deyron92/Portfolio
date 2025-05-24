@@ -30,6 +30,7 @@ This portfolio showcases a range of projects focused on network automation and c
 - **system-hardening-checklist.md**: Provides a checklist for securing systems.
 https://github.com/deyron92/Portfolio/blob/3c01be96c1325ddf35d43e74531933a873d45144/System%20Hardening%20Checklist
 - **wireshark-analysis-guide.md**: Offers guidance on analyzing network traffic with Wireshark.
+  https://github.com/deyron92/Portfolio/blob/e035079228d695b6b697af2dcb4b65b61c76b9f8/wireshark
 - **ids-setup-script.sh**: Automates the setup of an Intrusion Detection System.
 
 ## Reports
