@@ -21,6 +21,7 @@ This portfolio showcases a range of projects focused on network automation and c
 
 ## Network Automation Projects
 - **interface-troubleshooter.sh**: Automates the diagnosis of network interface issues.
+  https://github.com/deyron92/Portfolio/blob/67a57095a2c6d9dd55bb9034d02fff5f3fb689d9/Interface-Trouble%20Shooter
 - **ping-test.sh**: Performs connectivity tests to predefined hosts.
 - **subnet-calculator.py**: Calculates subnet information based on CIDR notation.
 - **switch-config-deploy.ps1**: Deploys configuration templates to network switches.
