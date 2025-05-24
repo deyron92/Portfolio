@@ -1,0 +1,348 @@
+My Wireshark Analysis Guide: How I Dig into Network Traffic
+
+Hey there! I put together this guide to show you how I use Wireshark to analyze network traffic. It’s one of my go-to tools for figuring out what’s happening on a network, whether I’m troubleshooting a slow app, sniffing out security issues, or just geeking out over protocols. I’ve spent a lot of time with Wireshark, and I want to share my approach to capturing, filtering, and making sense of packets in a way that’s clear and practical. This is for my GitHub portfolio, so you’ll see how I work and how I’d explain this to someone else.
+
+What’s Inside
+
+
+
+
+
+Why Wireshark’s My Tool of Choice
+
+
+
+Getting Wireshark Up and Running
+
+
+
+Grabbing Network Traffic
+
+
+
+Filtering the Noise
+
+
+
+Breaking Down Packets
+
+
+
+Stuff I’ve Done with Wireshark
+
+
+
+My Tips for Success
+
+
+
+Where to Learn More
+
+Why Wireshark’s My Tool of Choice
+
+Wireshark is like a superpower for network analysis. It lets me capture packets in real time, dig into hundreds of protocols, and get a clear picture of what’s going on. I’ve used it to track down why a website’s loading slowly, spot sketchy traffic, or even just learn how protocols like TCP or HTTP actually work. It’s free, open-source, and packed with features, which is why I keep coming back to it.
+
+Getting Wireshark Up and Running
+
+Here’s how I set things up to make sure Wireshark’s ready to roll:
+
+
+
+
+
+Installing It:
+
+
+
+
+
+I grab Wireshark from wireshark.org for whatever system I’m on—Windows, macOS, or Linux.
+
+
+
+I make sure to install npcap on Windows or libpcap on Linux/macOS so it can capture packets properly.
+
+
+
+Setting It Up:
+
+
+
+
+
+I pick the right network interface, like my Wi-Fi or Ethernet, to focus on the traffic I care about.
+
+
+
+On Linux, I’ll run it with sudo to get capture permissions. On Windows, I just make sure I’m running as admin.
+
+
+
+Tweaking It:
+
+
+
+
+
+I customize the display to show stuff like packet timestamps or sizes right in the main view.
+
+
+
+I’ve got profiles saved for different tasks, like one for security checks and another for performance stuff.
+
+This setup gets me ready to dive into traffic without any hiccups.
+
+Grabbing Network Traffic
+
+Capturing packets is where the fun starts. Here’s my process:
+
+
+
+
+
+Starting a Capture:
+
+
+
+
+
+I open Wireshark, pick the interface I want (like my Ethernet connection), and hit the green shark fin to start capturing.
+
+
+
+I steer clear of the “any” interface—it grabs everything and makes a mess.
+
+
+
+Stopping and Saving:
+
+
+
+
+
+When I’ve got enough data, I hit the red square to stop and save it as a .pcapng file so I can come back to it later.
+
+
+
+For example, I once captured traffic from a web server to figure out why it was acting sluggish and saved the file to share with my team.
+
+Pro Move: I always double-check I’m capturing the right interface to keep things clean and manageable.
+
+Filtering the Noise
+
+Filters are my secret weapon for cutting through the clutter. I use two kinds:
+
+
+
+
+
+Capture Filters:
+
+
+
+
+
+I set these before I start to only grab what I need, like host 192.168.1.10 for a specific device or port 80 for HTTP traffic.
+
+
+
+Once, I used tcp port 443 to zero in on HTTPS traffic for a security audit.
+
+
+
+Display Filters:
+
+
+
+
+
+After capturing, I use these to focus on specific packets, like ip.src == 192.168.1.10 to see traffic from one source or http.response.code == 500 to find server errors.
+
+
+
+I’ve used tcp.flags.syn == 1 && tcp.flags.ack == 0 to spot potential scans on a network.
+
+Filters I Lean On:
+
+
+
+
+
+
+
+Filter
+
+
+
+What It Does
+
+
+
+
+
+ip.addr == 192.168.1.1
+
+
+
+Shows traffic to/from a specific IP
+
+
+
+
+
+tcp.port == 80
+
+
+
+Grabs HTTP traffic
+
+
+
+
+
+dns
+
+
+
+Pulls up DNS queries and responses
+
+
+
+
+
+!arp
+
+
+
+Skips ARP packets to reduce noise
+
+How I Do It:
+
+
+
+
+
+I type the filter in the bar at the top, hit Enter, and check the results.
+
+
+
+I save my go-to filters (like one for catching DNS issues) so I can pull them up fast.
+
+Breaking Down Packets
+
+Here’s how I make sense of what I’ve captured:
+
+
+
+
+
+Checking the Packet List:
+
+
+
+
+
+I scan the main list for basics like IPs, protocols, and timestamps.
+
+
+
+For example, I caught a TCP retransmission issue once just by skimming this list.
+
+
+
+Digging into Details:
+
+
+
+
+
+I click a packet and expand its layers (like Ethernet > IP > TCP) to check headers or payloads.
+
+
+
+I once debugged an API by looking at HTTP headers to spot a wrong content-type.
+
+
+
+Following Streams:
+
+
+
+
+
+I right-click and pick Follow > TCP Stream to see a full conversation, like an HTTP request and response. This helped me fix a broken login page.
+
+
+
+Using Stats:
+
+
+
+
+
+I check Statistics > Protocol Hierarchy to see what’s dominating the traffic (like 80% TCP).
+
+
+
+Statistics > Conversations shows me who’s talking to who, which helped me find a device hogging bandwidth.
+
+Real Example: I used Statistics > TCP Stream Graphs to track down a laggy connection caused by a firewall rule gone wrong.
+
+Stuff I’ve Done with Wireshark
+
+Here’s a peek at how I’ve used Wireshark in real projects:
+
+
+
+
+
+Fixing Slow Apps: I pinned down a DNS issue causing a website to crawl by filtering dns and checking response times.
+
+
+
+Security Checks: I caught someone trying to brute-force SSH by filtering tcp.port == 22 and tracking the source IPs.
+
+
+
+Network Tuning: I used Statistics > IO Graph to see bandwidth usage and optimize a network during a busy event.
+
+
+
+Learning Protocols: I’ve captured TCP handshakes and HTTP requests just to study how they work under the hood.
+
+My Tips for Success
+
+
+
+
+
+Keep It Focused: I use capture filters to avoid grabbing junk data, which keeps my files small.
+
+
+
+Take Notes: I add comments to packets (Packet > Add Comment) so I can remember what I found and share it with others.
+
+
+
+Stay Safe: I’m careful not to capture sensitive stuff like passwords unless I have to, and I encrypt my .pcap files.
+
+
+
+Update Often: I keep Wireshark updated to get the latest features and stay secure.
+
+
+Know Your Protocols: Understanding TCP, HTTP, and DNS inside out makes my analysis way faster.
+
+Where to Learn More
+
+If you want to get better at Wireshark, here’s what’s helped me:
+
+
+Wireshark Docs for the nitty-gritty details.
+
+
+Wireshark Wiki for protocol breakdowns.
+
+Ask Wireshark for community help when I’m stuck.
+
+Online courses on Udemy—I’ve taken a couple to sharpen my skills.
