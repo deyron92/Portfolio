@@ -37,9 +37,6 @@ https://github.com/deyron92/Portfolio/blob/3c01be96c1325ddf35d43e74531933a873d45
 - **daily-health-check.sh**: Generates daily system health reports.
 - **generate-system-report.sh**: Compiles comprehensive system information.
 
-## Documentation
-- **project-overviews.md**: Summarizes each project's objectives and key features.
-
 
 <h2> 🤳 Connect with me:</h2>
 
