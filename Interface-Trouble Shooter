@@ -1,0 +1,124 @@
+ #!/bin/bash
+
+# interface-troubleshooter.sh
+# Automates diagnosis of network interface issues
+# Usage: ./interface-troubleshooter.sh [interface_name]
+
+# Function to display error and exit
+die() {
+    echo "Error150: $1" >&2
+    exit 1
+}
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to log messages with timestamp
+log_message() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Check for root privileges
+if [ "$EUID" -ne 0 ]; then
+    die "This script must be run as root"
+fi
+
+# Check for required commands
+for cmd in ip ping nmcli; do
+    command_exists "$cmd" || die "$cmd is required but not installed"
+done
+
+# Get interface name from argument or default to first active interface
+INTERFACE="$1"
+if [ -z "$INTERFACE" ]; then
+    INTERFACE=$(ip link | awk -F: '$0 !~ "lo|docker|br-|virbr" && $0 ~ "state UP" {print $2}' | head -n1 | tr -d ' ')
+fi
+
+[ -z "$INTERFACE" ] && die "No active network interface found"
+
+log_message "Starting network interface diagnosis for $INTERFACE"
+
+# Check interface status
+log_message "Checking interface status..."
+ip addr show "$INTERFACE" >/dev/null 2>&1 || die "Interface $INTERFACE does not exist"
+STATE=$(ip link show "$INTERFACE" | grep -o "state [A-Z]*" | awk '{print $2}')
+if [ "$STATE" != "UP" ]; then
+    log_message "Interface $INTERFACE is DOWN. Attempting to bring it up..."
+    ip link set "$INTERFACE" up
+    sleep 2
+    STATE=$(ip link show "$INTERFACE" | grep -o "state [A-Z]*" | awk '{print $2}')
+    [ "$STATE" != "UP" ] && die "Failed to bring interface $INTERFACE up"
+    log_message "Interface $INTERFACE is now UP"
+else
+    log_message "Interface $INTERFACE is UP"
+fi
+
+# Check IP address assignment
+log_message "Checking IP address..."
+IP_ADDR=$(ip addr show "$INTERFACE" | grep inet | awk '{print $2}' | head -n1)
+if [ -z "$IP_ADDR" ]; then
+    log_message "No IP address assigned to $INTERFACE. Attempting DHCP..."
+    if command_exists dhclient; then
+        dhclient -r "$INTERFACE" 2>/dev/null
+        dhclient "$INTERFACE" 2>/dev/null
+        IP_ADDR=$(ip addr show "$INTERFACE" | grep inet | awk '{print $2}' | head -n1)
+        [ -z "$IP_ADDR" ] && die "Failed to obtain IP address via DHCP"
+        log_message "IP address assigned: $IP_ADDR"
+    else
+        die "No IP address assigned and dhclient not available"
+    fi
+else
+    log_message "IP address: $IP_ADDR"
+fi
+
+# Check connectivity to gateway
+log_message "Checking gateway connectivity..."
+GATEWAY=$(ip route | grep default | awk '{print $3}' | head -n1)
+if [ -n "$GATEWAY" ]; then
+    ping -c 3 "$GATEWAY" >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        log_message "Gateway $GATEWAY is reachable"
+    else
+        die "Cannot reach gateway $GATEWAY"
+    fi
+else
+    die "No default gateway found"
+fi
+
+# Check DNS resolution
+log_message "Checking DNS resolution..."
+if command_exists nslookup; then
+    nslookup google.com >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        log_message "DNS resolution is working"
+    else
+        die "DNS resolution failed"
+    fi
+else
+    log_message "Warning: nslookup not available, skipping DNS check"
+fi
+
+# Check internet connectivity
+log_message "Checking internet connectivity..."
+ping -c 3 8.8.8.8 >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    log_message "Internet connectivity is working"
+else
+    die "No internet connectivity"
+fi
+
+# Check NetworkManager status if available
+if command_exists nmcli; then
+    log_message "Checking NetworkManager status..."
+    nmcli general status >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        log_message "NetworkManager is running"
+        nmcli device status | grep "$INTERFACE"
+    else
+        log_message "NetworkManager is not running"
+    fi
+fi
+
+log_message "Network diagnosis completed successfully for $INTERFACE"
